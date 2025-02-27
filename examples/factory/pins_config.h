@@ -11,8 +11,8 @@
 #define EXAMPLE_LCD_V_RES     240
 #define LVGL_LCD_BUF_SIZE     (EXAMPLE_LCD_H_RES * EXAMPLE_LCD_V_RES)
 
-#define WIFI_SSID             "YOUR-SSID"
-#define WIFI_PASSWORD         "YOUR-PSW"
+#define WIFI_SSID             "JioDongle_382798"
+#define WIFI_PASSWORD         "kimnp2qzgy"
 
 
 #define WIFI_CONNECT_WAIT_MAX (30 * 1000)

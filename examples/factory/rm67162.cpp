@@ -320,3 +320,23 @@ void lcd_sleep()
 {
     lcd_send_cmd(0x10, NULL, 0);
 }
+
+void lcd_brightness(uint8_t bright)
+{
+    lcd_send_cmd(0x51, &bright, 0x01);
+}
+
+void lcd_set_colour_enhance(uint8_t enh)
+{
+	lcd_send_cmd(0x58, &enh, 0x01);
+}	
+	
+void lcd_display_off()
+{
+	lcd_send_cmd(0x28, NULL, 0x01);
+}
+
+void lcd_display_on()
+{
+	lcd_send_cmd(0x29, NULL, 0x01);
+}

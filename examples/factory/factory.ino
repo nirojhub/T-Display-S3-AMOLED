@@ -46,6 +46,7 @@ void my_disp_flush(lv_disp_drv_t *disp,
 
 void test_screen_color()
 {
+    Serial.println("STAGE 1/4 : SCREEN COLOUR TEST STARTED");
     //Test screen bad pixels
     lv_obj_t *colors_obj = lv_obj_create(lv_scr_act());
     lv_obj_set_size(colors_obj, lv_pct(100), lv_pct(100));
@@ -86,11 +87,12 @@ void setup()
     * Touch version, IO38 is the screen power enable
     * Non-touch version, IO38 is an onboard LED light
     * * */
-    pinMode(PIN_LED, OUTPUT);
-    digitalWrite(PIN_LED, HIGH);
+    //pinMode(PIN_LED, OUTPUT);
+    //digitalWrite(PIN_LED, HIGH);
 
     rm67162_init(); // amoled lcd initialization
-    lcd_setRotation(1);
+    lcd_setRotation(3);
+    lcd_brightness(100);
 
     lv_init();
     buf = (lv_color_t *)ps_malloc(sizeof(lv_color_t) * LVGL_LCD_BUF_SIZE);
@@ -111,7 +113,7 @@ void setup()
     lv_obj_set_style_bg_color(lv_scr_act(), lv_color_black(), 0);
 
     // Factory test screen color
-    test_screen_color();
+    //test_screen_color();
 
     wifi_test();
 
@@ -137,6 +139,14 @@ void loop()
     if (millis() - last_tick > 100) {
         struct tm timeinfo;
         if (getLocalTime(&timeinfo)) {
+            timeinfo.tm_min = timeinfo.tm_min + 30;
+            if(timeinfo.tm_min >= 60){
+              timeinfo.tm_min = timeinfo.tm_min - 60;
+              timeinfo.tm_hour = timeinfo.tm_hour + 1;
+            }
+            if(timeinfo.tm_hour > 12){
+              timeinfo.tm_hour = timeinfo.tm_hour - 12;
+            }
             lv_msg_send(MSG_NEW_HOUR, &timeinfo.tm_hour);
             lv_msg_send(MSG_NEW_MIN, &timeinfo.tm_min);
         }
@@ -149,6 +159,8 @@ void loop()
 
 void wifi_test(void)
 {
+    
+    Serial.println("STAGE 2/4 : WIFI TEST STARTED");
     String text;
 
     lv_obj_t *log_label = lv_label_create(lv_scr_act());
@@ -267,7 +279,8 @@ void timeavailable(struct timeval *t)
 WiFiClientSecure client;
 
 void setTimezone()
-{
+{  
+    Serial.println("STAGE 3/4 : SET TIMEZONE STARTED");
     String timezone;
     client.setCACert(rootCACertificate);
     HTTPClient https;
@@ -286,13 +299,14 @@ void setTimezone()
         } else {
             Serial.printf("[HTTPS] GET... failed, error: %s\n",
                           https.errorToString(httpCode).c_str());
+            timezone = "none";
         }
         https.end();
     }
 
-    for (uint32_t i = 0; i < sizeof(zones); i++) {
+    for (uint32_t i = 0; i < sizeof(zones) / sizeof(zones[0]); i++) {
         if (timezone == "none") {
-            timezone = "CST-8";
+            timezone = "IST-5,30";
             break;
         }
         if (timezone == zones[i].name) {
